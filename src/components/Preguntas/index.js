@@ -4,6 +4,8 @@ import './InterfazPreguntas.css';
 
 //var total = 0;
 var cont = 0;
+var resultados_busqueda = [];
+var unavariable;
 
 const Item = props => (
   <tr>
@@ -23,8 +25,9 @@ class Preguntas extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { preg : null, cambio : true};
+    this.state = { preg : null, cambio : true, resultadosBusqueda: false, layer : false};
     setearPreg = setearPreg.bind(this)
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -41,90 +44,113 @@ class Preguntas extends Component {
   }
 
   ordenar_Usuario(){ 
-    cont = cont + 1;
+    if (this.state.preg != null){  
+      cont = cont + 1;
+      this.state.preg.questions.sort(
+        function (a, b) {
+          return b.id - a.id;
+        }
+      );
     
-    this.state.preg.questions.sort(
-      function (a, b) {
-        return b.id - a.id;
+      if (cont == 1){
+        this.setState({cambio : false})
+      }else{
+        window.location.reload()
       }
-    );
-    
-    if (cont == 1){
-      this.setState({cambio : false})
-    }else{
-      window.location.reload()
     }
   }
 
   ordenar_Producto(){ 
-    cont = cont + 1;
-
-    this.state.preg.questions.sort(
-      function (a, b) {
-        return b.item_id.localeCompare(a.item_id);
-      }
-    );
+    if (this.state.preg != null){  
+      cont = cont + 1;
+      this.state.preg.questions.sort(
+        function (a, b) {
+          return b.item_id.localeCompare(a.item_id);
+        }
+      );
     
-    if (cont == 1){
-      this.setState({cambio : false})
-    }else{
-      window.location.reload()
+      if (cont == 1){
+        this.setState({cambio : false})
+      }else{
+        window.location.reload()
+      }
     }
   }
 
-  ordenar_Pregunta(){ 
-    cont = cont + 1;
-
-    this.state.preg.questions.sort(
-      function (a, b) {
-        return b.id - a.id;
-      }
-    );
+  ordenar_Pregunta(){
+    if (this.state.preg != null){ 
+      cont = cont + 1;
+      this.state.preg.questions.sort(
+        function (a, b) {
+          return b.id - a.id;
+        }
+      );
     
-    if (cont == 1){
-      this.setState({cambio : false})
-    }else{
-      window.location.reload()
+      if (cont == 1){
+        this.setState({cambio : false})
+      }else{
+        window.location.reload()
+      }
     }
   }
 
 
   ordenar_Estado(){ 
-    cont = cont + 1;
-
-    this.state.preg.questions.sort(
-      function (a, b) {
-        return a.from.answered_questions - b.from.answered_questions
-      }
-    );
+    if (this.state.preg != null){
+      cont = cont + 1;
+      this.state.preg.questions.sort(
+        function (a, b) {
+          return a.from.answered_questions - b.from.answered_questions
+        }
+      );
     
-    if (cont == 1){
-      this.setState({cambio : false})
-    }else{
-      window.location.reload()
+      if (cont == 1){
+        this.setState({cambio : false})
+      }else{
+        window.location.reload()
+      }
     }
   }
 
   ordenar_Fecha(){ 
-    cont = cont + 1;
-
-    this.state.preg.questions.sort(
-      function (a, b) {
-        return b.date_created.localeCompare(a.date_created);
-      }
-    );
+    if (this.state.preg != null){
+      cont = cont + 1;
+      this.state.preg.questions.sort(
+        function (a, b) {
+          return b.date_created.localeCompare(a.date_created);
+        }
+      );
     
-    if (cont == 1){
-      this.setState({cambio : false})
-    }else{
-      window.location.reload()
+      if (cont == 1){
+        this.setState({cambio : false})
+      }else{
+        window.location.reload()
+      }
     }
   }
 
   itemList() {
-    if(this.state.preg!=null) {
+    if(this.state.preg != null && !this.state.resultadosBusqueda) {
+      this.state.layer = false;
       return this.state.preg.questions.map(function(citem, i){
+        console.log();
+        if (citem.status == "ANSWERED" || citem.status == "Respondida"){
+          citem.status = "Respondida";
+          } else {
+          citem.status = "Sin responder";
+        }      
       
+        console.log(citem)
+        return <Item data={citem} key={i} />;
+        
+      })
+    } else if(this.state.resultadosBusqueda) {
+        
+      this.state.resultadosBusqueda = false;
+      this.state.layer = true;
+
+      return resultados_busqueda.map(function(citem, i){
+          
         console.log();
         if (citem.status == "ANSWERED" || citem.status == "Respondida"){
           citem.status = "Respondida";
@@ -137,6 +163,7 @@ class Preguntas extends Component {
         return <Item data={citem} key={i} />;
       
       })
+
     }
   }
 
@@ -153,13 +180,24 @@ class Preguntas extends Component {
         <h1 style = {{textAlign: 'center'}} class = "titulo" > Preguntas </h1>
         
         
-        <form onSubmit={this.handleSubmit}>
-
+      <form onSubmit={this.handleSubmit} >
+        
+        <label htmlFor="new-todo">
+              Busqueda por mensaje:&nbsp;
+        </label>
+        
+        <input 
+          class = "buscador"
+          id="new-todo"
+          onChange={this.handleChange}
+          value={this.state.text}
+        />
+        
         <p style={{color:"#7c7d7e",backgroundColor:"#ebebeb"}}>&nbsp;Visualizar y ordenar las preguntas recibidas.&nbsp;</p>
-
-        </form>
-
-       
+      
+      <div>{unavariable}</div>
+      
+      </form>
 
         <table className = "table table-striped" style={{ marginTop: 20 }}>
           <thead>
@@ -202,25 +240,23 @@ class Preguntas extends Component {
   }
 
   handleChange(e) {
-    this.setState({ text: e.target.value });
-  }
 
-  handleSubmit(e) {
-
-    e.preventDefault();
-    if (!this.state.text.length) {
-      return;
-    }
-    var dato_ingresado = this.state.text;
+    resultados_busqueda = [];
     
-/*     localStorage.setItem('seller', dato_ingresado)
-    axios.get('http://localhost:8081/items/searchItems/' + dato_ingresado)
-      .then(setTimeout(function () {
-        window.location.reload()
-      }.bind(this), 1000)); */
-
+    this.state.preg.questions.map(function(preguntaActual, i){
+      if(preguntaActual.text.includes(e.target.value) || e.target.value == ''){ //
+        resultados_busqueda.push(preguntaActual)
+      }
+    })
+    this.setState({resultadosBusqueda: true})
   }
 
 }
 
 export default Preguntas;
+
+/*     localStorage.setItem('seller', dato_ingresado)
+    axios.get('http://localhost:8081/items/searchItems/' + dato_ingresado)
+      .then(setTimeout(function () {
+        window.location.reload()
+      }.bind(this), 1000)); */
