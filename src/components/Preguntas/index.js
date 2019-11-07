@@ -4,6 +4,7 @@ import './InterfazPreguntas.css';
 
 //var total = 0;
 var cont = 0;
+var click = false;
 var resultados_busqueda = [];
 var unavariable;
 
@@ -44,20 +45,21 @@ class Preguntas extends Component {
   }
 
   ordenar_Usuario(){ 
-    if (this.state.preg != null){  
-      cont = cont + 1;
-      this.state.preg.questions.sort(
-        function (a, b) {
-          return b.id - a.id;
-        }
-      );
-    
-      if (cont == 1){
-        this.setState({cambio : false})
+    if (this.state.preg != null){
+      if (click == false){
+        click = true;
+        this.state.preg.questions.sort(
+          function (a, b) {return b.id - a.id;}
+        );
       }else{
-        window.location.reload()
+        click = false;
+        console.log(click)
+        this.state.preg.questions.sort(
+          function (a, b) {return a.id - b.id;}
+        );
       }
     }
+    this.setState({cambio : false})
   }
 
   ordenar_Producto(){ 
@@ -171,7 +173,7 @@ class Preguntas extends Component {
 
 /*     if (this.state.preg != null){
      var total = this.state.preg.questions.length
-    } */ 
+    } */
 
     return (
 
