@@ -53,7 +53,6 @@ class Preguntas extends Component {
         );
       }else{
         click = false;
-        console.log(click)
         this.state.preg.questions.sort(
           function (a, b) {return a.id - b.id;}
         );
@@ -63,72 +62,82 @@ class Preguntas extends Component {
   }
 
   ordenar_Producto(){ 
-    if (this.state.preg != null){  
-      cont = cont + 1;
-      this.state.preg.questions.sort(
-        function (a, b) {
+    if (this.state.preg != null){
+      if (click == false){  
+        click = true;
+        this.state.preg.questions.sort(function (a, b) {
           return b.item_id.localeCompare(a.item_id);
         }
-      );
-    
-      if (cont == 1){
-        this.setState({cambio : false})
+        );
       }else{
-        window.location.reload()
+        click = false;
+        this.state.preg.questions.sort(
+          function (a, b) {
+            return a.item_id.localeCompare(b.item_id);
+          }
+        );
       }
     }
+    this.setState({cambio : false})
   }
 
   ordenar_Pregunta(){
-    if (this.state.preg != null){ 
-      cont = cont + 1;
-      this.state.preg.questions.sort(
-        function (a, b) {
+    if (this.state.preg != null){
+      if(click == false){
+        click = true;
+        this.state.preg.questions.sort(function (a, b) {
           return b.id - a.id;
         }
       );
-    
-      if (cont == 1){
-        this.setState({cambio : false})
       }else{
-        window.location.reload()
+          click = false;
+          this.state.preg.questions.sort(
+            function (a, b){
+              return a.id - b.id
+            }     
+          );  
       }
     }
+    this.setState({cambio : false})
   }
 
 
   ordenar_Estado(){ 
     if (this.state.preg != null){
-      cont = cont + 1;
-      this.state.preg.questions.sort(
-        function (a, b) {
+      if(click == false){
+        click = true;
+        this.state.preg.questions.sort(function (a, b){
           return a.from.answered_questions - b.from.answered_questions
         }
       );
-    
-      if (cont == 1){
-        this.setState({cambio : false})
       }else{
-        window.location.reload()
+        click = false;
+        this.state.preg.questions.sort(function (a, b){
+          return b.from.answered_questions - a.from.answered_questions
+        }
+        );
       }
     }
+    this.setState({cambio : false})
   }
 
   ordenar_Fecha(){ 
     if (this.state.preg != null){
-      cont = cont + 1;
-      this.state.preg.questions.sort(
-        function (a, b) {
+      if (click == false){
+        click = true;
+        this.state.preg.questions.sort(function (a, b) {
           return b.date_created.localeCompare(a.date_created);
         }
-      );
-    
-      if (cont == 1){
-        this.setState({cambio : false})
+        );
       }else{
-        window.location.reload()
+        click = false;
+        this.state.preg.questions.sort(function (a, b){
+          return a.date_created.localeCompare(b.date_created);
+        }
+        );
       }
     }
+    this.setState({cambio : false})
   }
 
   itemList() {
@@ -181,48 +190,50 @@ class Preguntas extends Component {
 
         <h1 style = {{textAlign: 'center'}} class = "titulo" > Preguntas </h1>
         
+      <div style={{textAlign: 'center'}} class="input">  
+        <form onSubmit={this.handleSubmit} >
+          
+          <label htmlFor="new-todo">
+                Busqueda por pregunta:&nbsp;
+          </label>
+          
+          <input 
+            class = "buscador"
+            id="new-todo"
+            onChange={this.handleChange}
+            value={this.state.text}
+          />
         
-      <form onSubmit={this.handleSubmit} >
-        
-        <label htmlFor="new-todo">
-              Busqueda por mensaje:&nbsp;
-        </label>
-        
-        <input 
-          class = "buscador"
-          id="new-todo"
-          onChange={this.handleChange}
-          value={this.state.text}
-        />
         
         <p style={{color:"#7c7d7e",backgroundColor:"#ebebeb"}}>&nbsp;Visualizar y ordenar las preguntas recibidas.&nbsp;</p>
       
-      <div>{unavariable}</div>
+        <div>{unavariable}</div>
       
-      </form>
+        </form>
+      </div>
 
-        <table className = "table table-striped" style={{ marginTop: 20 }}>
+        <table className = "table table-striped" style={{ marginTop: 5 }}>
           <thead>
             <tr>
 
               <th>
-                <button onClick = {this.ordenar_Usuario.bind(this)} class = "Button User" > Ordenar por Usuario </button>
+                <button onClick = {this.ordenar_Usuario.bind(this)} type = "button" class = "btn btn-outline-success" > Ordenar por Usuario </button>
               </th>
               
               <th>
-                <button onClick = {this.ordenar_Producto.bind(this)} class = "Button Producto" > Ordenar por Publicación </button>
+                <button onClick = {this.ordenar_Producto.bind(this)} type = "button" class = "btn btn-outline-danger" > Ordenar x Publicación </button>
               </th>
 
               <th>
-                <button onClick = {this.ordenar_Pregunta.bind(this)} class = "Button Pregunta" > Ordenar por Pregunta  </button>
+                <button onClick = {this.ordenar_Pregunta.bind(this)} type = "button" class = "btn btn-outline-warning" > Ordenar por Pregunta  </button>
               </th>
               
               <th>
-                <button onClick = {this.ordenar_Estado.bind(this)} class = "Button Estado" > Ordenar por Estado </button>
+                <button onClick = {this.ordenar_Estado.bind(this)} type = "button" class = "btn btn-outline-info" > Ordenar por Estado </button>
               </th>
               
               <th>
-                <button onClick = {this.ordenar_Fecha.bind(this)} class = "Button Fecha" > Ordenar por Fecha </button>   
+                <button onClick = {this.ordenar_Fecha.bind(this)} type = "button" class = "btn btn-outline-light" > Ordenar por Fecha </button>   
               </th>
 
             </tr>
