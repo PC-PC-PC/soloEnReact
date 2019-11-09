@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import {Pie} from 'react-chartjs-2';
 import './InterfazTenCat.css';
 
+var respuesta;
+
 var data = {
   labels:[/*CREAR VARIABLE QUE DEFINE LA CANTIDAD DE CAMPOS DEL GRÁFICO*/],
   datasets:[
@@ -17,14 +19,15 @@ var data = {
 
 var options = {
 maintainAspectRtio: false,
-scales: {
-  yAxes: [{
-      ticks: {
-          beginAtZero: true
-      }
-  }]
+  scales: {
+    yAxes: [{
+        ticks: {
+            beginAtZero: true
+        }
+    }]
+  }
 }
-}
+
 class TenCat extends Component {
   componentDidMount() {
     fetch('https://api.github.com/orgs/nodejs')
@@ -35,7 +38,10 @@ class TenCat extends Component {
     fetch('http://localhost:4000/TenCat')
       .then(function (res) { 
         console.log(res);
+        respuesta = JSON.stringify(res)
+        console.log(respuesta)
       })
+
   }
   render() {
 

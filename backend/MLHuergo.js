@@ -924,6 +924,7 @@ routes.route('/CatTend').get(function(req, res) {
             return 0;
 
         }else
+
             res.json(item);
 
     });
@@ -1001,76 +1002,120 @@ routes.route('/CatTend/delete').post(function(req, res) {
 
 app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
     
-    preg.get('/sites/MLA/categories', function(err, res){  
+    var catTime = [30];
+    let today = new Date();
+    let date = today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
+    fetch('http://localhost:4000/MLHuergo/CatTend', {
 
-        var catTime = [30];
-        let today = new Date();
-        let date = today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
-        fetch('http://localhost:4000/MLHuergo/CatTend', {
-
-                        method: "GET",
-                        headers: {
-                    
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Accept': 'application/json' 
-                    
-                        }
+                    method: "GET",
+                    headers: {
                 
-        }).then(function(resp) {resp.json().then(function(res){
-
-            if(res.body[res.length - 1]._date == date){ //Si ya se consiguieron los datos de hoy...
-
-                //calcular % de ventas acá
-                console.log("Ya tenemos datos actualizados")
-                resAFE.status(200).json(res);
-
-            }
-            //Conseguir la cantidad de ventas de hoy
-            var total = 0;
-            res.map(function(item, i){
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json' 
                 
-                catTime[i] = {
-    
-                    _name: item.name,
-                    _day: date,
-                    _cant: 0
-    
-                } 
-                // de aca en adelante, una vez por día en algun otro lado
-    
-                preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
-                    var cont = 0;
-                    res.results.map(function(producto, x){
-                    
-                        catTime[i]._cant += producto.sold_quantity;
-    
-                    })
-                    total += catTime[i]._cant; 
-                    //total = cantidad de unidades venididas TOTALES (todas las categorías)
-                    
-                    fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
-                    
-                        method: 'POST',
-                        body: JSON.stringify(catTime[i]),
-                        headers:{
-                            'Content-Type': 'application/json',
-                        }
-    
-                    })
-                    .then(function(res){ 
-    
-    
-                    }).catch(function(error) {
-                        console.log('Fetch Error:', error);
-                    });
+                    }
+            
+    })
+    .then(function(resp) {resp.json().then(function(rest){
+
+        var hoyTotal = 0;
+        var proporcion;
+        var propTotal = 0;
+        var toReturn = []; //toReturn.push(val);
+        var len = rest.length - 1
+        var acortar;
+        if(!isEmptyObject(rest)) {
+
+            if(rest[len]._day == date){ //Si ya se consiguieron los datos de hoy...
+                rest.map(function(cat, i){
+                    //console.log(cat);
+                    hoyTotal += cat._cant;
+                })
+                
+                rest.map(function(cat, i){
+                    /*   
+                        hoytotal  ------- 100%
+                        cat._cant ------- X
+                    */
+                    proporcion = (cat._cant * 100) / hoyTotal
+                    propTotal += proporcion;
+                    acortar = (JSON.stringify(proporcion)).substring(0, 4);
+                    toReturn.push(acortar);
+                    console.log(acortar);
                     
                 })
-                        
-            })
-        
-        })})
 
+                console.log("Total proporciones: " + propTotal)
+                console.log("Total de unidades vendidas en porcentaje: " + hoyTotal);
+                console.log("Ya tenemos datos actualizados")
+                
+                
+            }
+            
+            reqDeFE.send(toReturn)
+            //resAFE.status(200).json(toReturn);
+
+        }else{
+
+            preg.get('/sites/MLA/categories', function(err, res){
+
+                var total = 0;
+                res.map(function(item, i){
+                    
+                    catTime[i] = {
+        
+                        _name: item.name,
+                        _day: date,
+                        _cant: 0
+        
+                    } 
+                    // de aca en adelante, una vez por día en algun otro lado
+    
+                    preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
+                        var cont = 0;
+                        res.results.map(function(producto, x){
+                        
+                            catTime[i]._cant += producto.sold_quantity;
+        
+                        })
+                        total += catTime[i]._cant; 
+                        
+                        //total = cantidad de unidades venididas TOTALES (todas las categorías)
+    
+                        fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
+                        
+                            method: 'POST',
+                            body: JSON.stringify(catTime[i]),
+                            headers:{
+                                'Content-Type': 'application/json',
+                            }
+        
+                        })
+                        .then(function(res){ 
+        
+        
+                        }).catch(function(error) {
+                            console.log('Fetch Error:', error);
+                        });
+                        
+                    })
+                            
+                })
+            
+            })
+            .catch(function(error) {
+                    console.log('Fetch Error:', error);
+            });
+
+        }
+        //Conseguir la cantidad de ventas de hoy (this is a work, not a fact)
+        
+    
     })
+
+})
+
+//})
 
 })
 
