@@ -1,7 +1,9 @@
 .titulo{
     font-size: 400%;
     color: black;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
     margin-top: 2%;
     margin-bottom: 2%;
   }
