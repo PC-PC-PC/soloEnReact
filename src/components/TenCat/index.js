@@ -41,6 +41,171 @@ class TenCat extends Component {
         respuesta = JSON.stringify(res)
         console.log(respuesta)
       })
+    fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
+                        
+      method: 'POST',
+      body: JSON.stringify(
+        {
+          "_name": "Accesorios para VehículosMax",
+          "_day": "Irrelevante",
+          "_cant": 0         
+        },
+        {
+          "_name": "Alimentos y BebidasMax",
+          "_day": "Irrelevante",
+          "_cant": 0
+        },
+        {
+          "_name": "Animales y MascotasMax",
+          "_day": "Irrelevante",
+          "_cant": 0     
+        },
+        {
+          "_name": "Antigüedades y ColeccionesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Arte, Librería y MerceríaMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Autos, Motos y OtrosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "BebésMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Belleza y Cuidado PersonalMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Cámaras y AccesoriosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Celulares y TeléfonosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "ComputaciónMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Consolas y VideojuegosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Deportes y FitnessMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Electrodomésticos y Aires Ac.Max",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Electrónica, Audio y VideoMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Entradas para EventosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Herramientas y ConstrucciónMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Hogar, Muebles y JardínMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Industrias y OficinasMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "InmueblesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Instrumentos MusicalesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Joyas y RelojesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Juegos y JuguetesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Libros, Revistas y ComicsMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Música, Películas y SeriesMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Ropa y AccesoriosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Salud y Equipamiento MédicoMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "ServiciosMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Souvenirs, Cotillón y FiestasMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        },
+        {
+          "_name": "Otras categoríasMax",
+          "_day": "Irrelevante",
+          "_cant": 0    
+        }
+      ),
+      headers:{
+          'Content-Type': 'application/json',
+      }
+
+     })
+      .then(function (res) { 
+        console.log(res);
+        respuesta = JSON.stringify(res)
+        console.log(respuesta)
+      })
 
   }
   render() {

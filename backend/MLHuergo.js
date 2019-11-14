@@ -1000,6 +1000,29 @@ routes.route('/CatTend/delete').post(function(req, res) {
 
 });
 
+routes.route('/CatTend/update').post(function(req, res){
+
+    let id = req.body._name;
+    CatTend.updateOne({_name: id}, {
+        
+        $set: { 
+
+            "_name": req.body._name,
+            "_day": req.body._day,
+            "_cant": req.body._cant,
+
+        },
+
+    }, function(err, resp){ 
+        if(err) 
+            console.log(err);
+        else
+            res.status(200).json({mensaje:"Actualizacion completada"});
+
+    })
+
+});
+
 app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
     
     var catTime = [30];
@@ -1017,7 +1040,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
             
     })
     .then(function(resp) {resp.json().then(function(rest){
-
+        console.log('hice json de la respuesta')
         var hoyTotal = 0;
         var proporcion;
         var propTotal = 0;
@@ -1025,7 +1048,9 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
         var len = rest.length - 1
         var acortar;
         if(!isEmptyObject(rest)) {
-
+            console.log('paso el if loco')
+            console.log(rest[len]._day)
+            console.log(date)
             if(rest[len]._day == date){ //Si ya se consiguieron los datos de hoy...
                 rest.map(function(cat, i){
                     //console.log(cat);
@@ -1052,13 +1077,13 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                 
             }
             
-            reqDeFE.send(toReturn)
-            //resAFE.status(200).json(toReturn);
+            //reqDeFE.send(toReturn)
+            resAFE.status(200).json(toReturn);
 
         }else{
 
             preg.get('/sites/MLA/categories', function(err, res){
-
+                console.log('parece que hizo la pregunta de categories')
                 var total = 0;
                 res.map(function(item, i){
                     
@@ -1067,8 +1092,9 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         _name: item.name,
                         _day: date,
                         _cant: 0
+                        
         
-                    } 
+                    }
                     // de aca en adelante, una vez por día en algun otro lado
     
                     preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
@@ -1093,7 +1119,23 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         })
                         .then(function(res){ 
         
-        
+                            catTime[i]._name += "Total"; 
+                            fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
+                        
+                                method: 'POST',
+                                body: JSON.stringify(catTime[i]),
+                                headers:{
+                                    'Content-Type': 'application/json',
+                                }
+            
+                            })
+                            .then(function(res){ 
+            
+            
+                            }).catch(function(error) {
+                                console.log('Fetch Error:', error);
+                            });
+
                         }).catch(function(error) {
                             console.log('Fetch Error:', error);
                         });

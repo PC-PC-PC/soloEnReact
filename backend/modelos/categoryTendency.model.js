@@ -7,7 +7,7 @@ let CatTend = new Schema({
         type: String
     },
     _day: {
-        type: []
+        type: String
     },
     _cant: {
         type: Number
