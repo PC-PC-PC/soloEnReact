@@ -194,7 +194,7 @@ class Preguntas extends Component {
         <form onSubmit={this.handleSubmit} >
           
           <label htmlFor="new-todo">
-                Busqueda por pregunta:&nbsp;
+                Búsqueda por pregunta: &nbsp;
           </label>
           
           <input 
@@ -221,7 +221,7 @@ class Preguntas extends Component {
               </th>
               
               <th>
-                <button onClick = {this.ordenar_Producto.bind(this)} type = "button" class = "btn btn-outline-danger" > Ordenar x Publicación </button>
+                <button onClick = {this.ordenar_Producto.bind(this)} type = "button" class = "btn miColor" > Ordenar x Publicación </button>
               </th>
 
               <th>

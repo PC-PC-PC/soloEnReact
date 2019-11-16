@@ -843,75 +843,7 @@ routes.route('/FollSell/delete/:name').post(function(req, res) {
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////Funciones de los vendedores X categorias/////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-routes.route('/CatSell').get(function(req, res) {
-
-    CatSell.find(function(err, item) {
-
-        if (err){ 
-
-            res.status(400).json(err);
-            return 0;
-
-        }else
-            res.status(200).json(item);
-
-    });
-
-});
-
-routes.route('/CatSell/add').post(function(req, res) {
-
-    let catSell = new CatSell(req.body);
-    catSell.save()
-        .then(item => {
-
-            res.status(200).json({'ofsel': 'item added successfully'});
-
-        })
-        .catch(err => {
-
-            res.status(400).send('adding new item failed');
-
-        });
-
-});
-
-routes.route('/CatSell/searchName/:name').get(function(req, res) {
-
-    let name = req.params.name;
-    CatSell.find().byName(name).exec(function(err, item) {
-
-        if(err)
-            console.status(400).log(err)
-        else{
-
-            if(isEmptyObject(item))
-                res.status(404).json({error: 'Nonexistent item.'})
-            else
-                res.status(200).json(item);
-                
-        }
-
-    });
-
-});
-
-routes.route('/CatSell/delete').post(function(req, res) {
-
-    CatSell.deleteMany({_id: "5d1506238069d42b5837cdd1"}, function(err) {
-
-        if(err) console.log(err);
-        res.status(200).json({item: "Eliminado con exito"});
-
-    });
-
-});
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////Funciones de las tendencias X categorias/////////////////////////////////////////
+////////////////////////////Funciones de las tendencias X categorias////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 routes.route('/CatTend').get(function(req, res) {
@@ -1030,16 +962,18 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
     let date = today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
     fetch('http://localhost:4000/MLHuergo/CatTend', {
 
-                    method: "GET",
-                    headers: {
-                
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json' 
-                
-                    }
+        method: "GET",
+        headers: {
+    
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json' 
+    
+        }
             
     })
     .then(function(resp) {resp.json().then(function(rest){
+
+        console.log('----------------------')
         console.log('hice json de la respuesta')
         var hoyTotal = 0;
         var proporcion;
@@ -1048,36 +982,59 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
         var len = rest.length - 1
         var acortar;
         if(!isEmptyObject(rest)) {
+
+            console.log('')
             console.log('paso el if loco')
-            console.log(rest[len]._day)
+            console.log('')
+            console.log(rest + ' respuesta de rest limpia')
+            console.log('')
+            console.log(rest[len]._day + ' respuesta de rest modificado')
+            console.log('')
             console.log(date)
-            if(rest[len]._day == date){ //Si ya se consiguieron los datos de hoy...
+
+            if(true){ //rest[len]._day == date
                 rest.map(function(cat, i){
-                    //console.log(cat);
-                    hoyTotal += cat._cant;
+                    console.log(cat)
+                    if (cat._cant != undefined || cat._cant != null) {
+                        hoyTotal += cat._cant;
+                        console.log('entró al if')
+                    }
+                    //console.log(hoyTotal, 'hoytotal')
+
+                    
                 })
+                
                 
                 rest.map(function(cat, i){
                     /*   
                         hoytotal  ------- 100%
                         cat._cant ------- X
                     */
-                    proporcion = (cat._cant * 100) / hoyTotal
+                    // console.log(cat)
+                    // console.log(hoyTotal,'hoytotal')
+                    proporcion = 0;
+                    if (hoyTotal > 0) {
+                        proporcion = (cat._cant * 100) / hoyTotal
+                    }
+                    console.log(proporcion)
+
                     propTotal += proporcion;
+                    console.log(propTotal)
                     acortar = (JSON.stringify(proporcion)).substring(0, 4);
-                    toReturn.push(acortar);
-                    console.log(acortar);
-                    
+                    toReturn.push(acortar);                   
+                    console.log(acortar); 
+       
                 })
 
                 console.log("Total proporciones: " + propTotal)
                 console.log("Total de unidades vendidas en porcentaje: " + hoyTotal);
                 console.log("Ya tenemos datos actualizados")
                 
-                
             }
             
             //reqDeFE.send(toReturn)
+            console.log(toReturn)
+            console.log('LISTO')
             resAFE.status(200).json(toReturn);
 
         }else{
@@ -1093,8 +1050,8 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         _day: date,
                         _cant: 0
                         
-        
                     }
+
                     // de aca en adelante, una vez por día en algun otro lado
     
                     preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
@@ -1104,6 +1061,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                             catTime[i]._cant += producto.sold_quantity;
         
                         })
+
                         total += catTime[i]._cant; 
                         
                         //total = cantidad de unidades venididas TOTALES (todas las categorías)
@@ -1118,8 +1076,11 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
         
                         })
                         .then(function(res){ 
-        
-                            catTime[i]._name += "Total"; 
+                            console.log('')
+                            console.log('lo de abajo agrega Max a todas las categorías')
+                            catTime[i]._name += "Max";
+                            //console.log(catTime[i]._name) 
+                            
                             fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
                         
                                 method: 'POST',
@@ -1131,25 +1092,29 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                             })
                             .then(function(res){ 
             
-            
                             }).catch(function(error) {
                                 console.log('Fetch Error:', error);
                             });
+                            resAFE.status(200).json(toReturn);
+
 
                         }).catch(function(error) {
                             console.log('Fetch Error:', error);
                         });
                         
                     })
-                            
+
                 })
-            
+    
             })
             .catch(function(error) {
                     console.log('Fetch Error:', error);
             });
-
+            
         }
+        console.log('')
+        console.log('salí del fetch')
+
         //Conseguir la cantidad de ventas de hoy (this is a work, not a fact)
         
     
@@ -1162,8 +1127,8 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
 })
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////Funciones de las vendedores X categorias/////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////Funciones de las vendedores X categorias////////////////////////////////
+//////////////////////////////////////////CATTIME///////////////////////////////////////////////////
 
 routes.route('/CatTime').get(function(req, res) {
 
@@ -1249,6 +1214,73 @@ routes.route('/CatTime/delete').post(function(req, res) {
 
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////Vendedores X categorias CATSELL////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+routes.route('/CatSell').get(function(req, res) {
+
+    CatSell.find(function(err, item) {
+
+        if (err){ 
+
+            res.status(400).json(err);
+            return 0;
+
+        }else
+            res.status(200).json(item);
+
+    });
+
+});
+
+routes.route('/CatSell/add').post(function(req, res) {
+
+    let catSell = new CatSell(req.body);
+    catSell.save()
+        .then(item => {
+
+            res.status(200).json({'ofsel': 'item added successfully'});
+
+        })
+        .catch(err => {
+
+            res.status(400).send('adding new item failed');
+
+        });
+
+});
+
+routes.route('/CatSell/searchName/:name').get(function(req, res) {
+
+    let name = req.params.name;
+    CatSell.find().byName(name).exec(function(err, item) {
+
+        if(err)
+            console.status(400).log(err)
+        else{
+
+            if(isEmptyObject(item))
+                res.status(404).json({error: 'Nonexistent item.'})
+            else
+                res.status(200).json(item);
+                
+        }
+
+    });
+
+});
+
+routes.route('/CatSell/delete').post(function(req, res) {
+
+    CatSell.deleteMany({_id: "5d1506238069d42b5837cdd1"}, function(err) {
+
+        if(err) console.log(err);
+        res.status(200).json({item: "Eliminado con exito"});
+
+    });
+
+});
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////Funciones de las preguntas//////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
