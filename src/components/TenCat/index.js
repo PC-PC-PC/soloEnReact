@@ -45,7 +45,7 @@ function otrafuncion(thisComponent) {
   fetch('http://localhost:4000/TenCat')
     .then(function (res) { 
       res.json().then(function(resp){
-        
+
         //console.log(resp.data);
         respuesta = resp.slice(1,31)
         console.log(respuesta)
@@ -84,7 +84,20 @@ class TenCat extends Component {
   componentDidMount() {
     let thisComponent = this
     otrafuncion(thisComponent)
+
+  }
+  ultimo_dia(){
+
   } 
+  ultima_semana(){
+
+  }
+  ultimo_mes(){
+
+  }
+  ultimo_año(){
+
+  }
   render() {
 
     return (
@@ -98,27 +111,19 @@ class TenCat extends Component {
 
           <div algo = "alinear">
             <div class = "inner">
-              <button class =  "dia" >
-                Último día
-              </button>
+              <button onClick = {this.ultimo_dia.bind(this)} type = "button" class = "btn btn-primary" > Ultimo dia </button>
             </div>
   
             <div class = "inner">
-              <button class =  "semana" >
-                Última semana
-              </button>
+              <button onClick = {this.ultima_semana.bind(this)} type = "button" class = "btn btn-dark" > Ultima semana </button>
             </div>
 
             <div class = "inner">
-              <button class =  "mes" >
-                Último mes
-              </button>
+              <button onClick = {this.ultimo_mes.bind(this)} type = "button" class = "btn btn-success" > Ultimo mes </button>
             </div>
 
             <div class = "inner">
-              <button class =  "año" >
-                Último año
-              </button>
+              <button onClick = {this.ultimo_año.bind(this)} type = "button" class = "btn btn-danger" > Ultimo año </button>
             </div>
         
           </div>
