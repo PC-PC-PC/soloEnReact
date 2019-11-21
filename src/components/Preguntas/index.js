@@ -38,7 +38,7 @@ class Preguntas extends Component {
     })
       .then(function (data) {
         data = JSON.stringify(data);// acá podes hacer cosas con res, que es la respuesta en forma de json que de dio eze}
-        localStorage.setItem('preguntas',data)
+        localStorage.setItem('preguntas', data)
         var preg = JSON.parse(localStorage.getItem('preguntas'))
         setearPreg(preg);
     })
