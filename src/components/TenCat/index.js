@@ -45,12 +45,13 @@ function otrafuncion(thisComponent) {
   fetch('http://localhost:4000/TenCat')
     .then(function (res) { 
       res.json().then(function(resp){
-
+        
         //console.log(resp.data);
         respuesta = resp.slice(1,31)
         console.log(respuesta)
         data.datasets[0].data = respuesta
         console.log('la de arriba es la respuesta')
+        
         //recorrerlalista
         //elegir los 10 mas grandes
         //sumar las cantidades de los demás (los mas chicos)
