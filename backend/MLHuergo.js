@@ -171,6 +171,85 @@ app.post('/pantallaInicio', function(reqv, resv) {
     }
 })
 
+function calculateCaTend(objs, leng){
+
+    var hoyTotal = 0;
+    var proporcion;
+    var propTotal = 0;
+    var toReturn = []; //toReturn.push(val);
+    //var totalOtrasCat = 0;
+    var otraCategoria = [];
+    var acortar;
+    objs.map(function(cat, i){
+        console.log(cat)
+        if (cat._cant != undefined || cat._cant != null) {
+            hoyTotal += cat._cant;
+            console.log('entró al if')
+        }
+        //console.log(hoyTotal, 'hoytotal')
+    })
+    
+    objs.map(function(cat, i){
+        //calculo de proporcionalidad
+        proporcion = 0;
+        if (hoyTotal > 0) {
+            proporcion = (cat._cant * 100) / hoyTotal
+        }
+        
+        propTotal += proporcion;
+
+        acortar = (JSON.stringify(proporcion)).substring(0, 4);
+        toReturn.push(acortar);
+        otraCategoria.push(otraCategoria);
+    })
+    
+    console.log("Total proporciones: " + propTotal)
+    console.log("Total de unidades vendidas en porcentaje: " + propTotal);
+    console.log("Ya tenemos datos actualizados")
+        
+    toReturn = toReturn.slice(leng - 30, leng) //ignoro el primero y agarro los proxs. 30
+    lista_categorias_ordenadas_sin_duplicados = objs.slice(1,31)
+    toReturnOrdenado = toReturn.sort(function(a, b) {
+        return b - a;
+    });
+
+    lista_categorias_ordenadas_como_objetos = lista_categorias_ordenadas_sin_duplicados.sort(function ordenar_nombres_por_cantidad(a, b) { // non-anonymous as you ordered...
+        return b._cant > a._cant ?  1 // if b should come earlier, push a to end
+        : b._cant < a._cant ? -1 // if b should come later, push a to begin
+        : 0;
+        }
+    )
+    
+    lista_categorias_ordenadas = [];
+
+    lista_categorias_ordenadas_como_objetos.map(function(cat, i){
+        lista_categorias_ordenadas.push(cat._name)
+    })            
+
+    var lista_categorias_ordenadasSolo10 = lista_categorias_ordenadas.slice(0,10)
+    lista_categorias_ordenadasSolo10.push('Otros')
+
+
+    var toReturnSolo10 = toReturn.slice(0,10)
+    otraCategoria = toReturnOrdenado.slice(10, 30)
+    var totalDeOtros = 0
+
+    otraCategoria.map(function (valor, i){
+         console.log(valor)
+         totalDeOtros = totalDeOtros +parseFloat(valor);
+    })
+    //totalDeOtros = (totalDeOtros.toString()).substring(0, 4);
+    console.log((totalDeOtros.toString()).substring(0, 4))
+    
+    toReturnSolo10.push((totalDeOtros.toString()).substring(0, 4))
+
+    console.log(toReturnSolo10);
+    console.log(otraCategoria);
+    otraCategoria = JSON.stringify(otraCategoria);
+    console.log('LISTO')
+    return [toReturnSolo10,lista_categorias_ordenadasSolo10];
+
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Funciones de los productos/////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -975,15 +1054,8 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
 
         console.log('----------------------')
         console.log('hice json de la respuesta')
-        var hoyTotal = 0;
-        var proporcion;
-        var propTotal = 0;
-        var totalOtrasCat = 0;
-        var toReturn = []; //toReturn.push(val);
-        var otraCategoria = [];
         var len = rest.length - 1
-        var acortar;
-        if(!isEmptyObject(rest)) {
+        if(date == rest[rest.length - 1]._day) {
 
             console.log('')
             console.log('paso el if loco')
@@ -993,76 +1065,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
             console.log(rest[len]._day + ' respuesta de rest modificado')
             console.log('')
             console.log(date)
-
-            rest.map(function(cat, i){
-                console.log(cat)
-                if (cat._cant != undefined || cat._cant != null) {
-                    hoyTotal += cat._cant;
-                    console.log('entró al if')
-                }
-                //console.log(hoyTotal, 'hoytotal')
-            })
-            
-            rest.map(function(cat, i){
-                //calculo de proporcionalidad
-                proporcion = 0;
-                if (hoyTotal > 0) {
-                    proporcion = (cat._cant * 100) / hoyTotal
-                }
-                
-                propTotal += proporcion;
-
-                acortar = (JSON.stringify(proporcion)).substring(0, 4);
-                toReturn.push(acortar);
-                otraCategoria.push(otraCategoria);
-            })
-            
-            console.log("Total proporciones: " + propTotal)
-            console.log("Total de unidades vendidas en porcentaje: " + propTotal);
-            console.log("Ya tenemos datos actualizados")
-                
-            
-            toReturn = toReturn.slice(1,31) //ignoro el primero y agarro los proxs. 30
-            lista_categorias_ordenadas_sin_duplicados = rest.slice(1,31)
-            toReturnOrdenado = toReturn.sort(function(a, b) {
-                return b - a;
-            });
-
-            lista_categorias_ordenadas_como_objetos = lista_categorias_ordenadas_sin_duplicados.sort(function ordenar_nombres_por_cantidad(a, b) { // non-anonymous as you ordered...
-                return b._cant > a._cant ?  1 // if b should come earlier, push a to end
-                : b._cant < a._cant ? -1 // if b should come later, push a to begin
-                : 0;
-                }
-            )
-            
-            lista_categorias_ordenadas = [];
-
-            lista_categorias_ordenadas_como_objetos.map(function(cat, i){
-                lista_categorias_ordenadas.push(cat._name)
-            })            
-
-            var lista_categorias_ordenadasSolo10 = lista_categorias_ordenadas.slice(0,10)
-            lista_categorias_ordenadasSolo10.push('Otros')
-
-
-            var toReturnSolo10 = toReturn.slice(0,10)
-            otraCategoria = toReturnOrdenado.slice(10, 30)
-            var totalDeOtros = 0
-
-            otraCategoria.map(function (valor, i){
-                 console.log(valor)
-                 totalDeOtros = totalDeOtros +parseFloat(valor);
-            })
-            //totalDeOtros = (totalDeOtros.toString()).substring(0, 4);
-            console.log((totalDeOtros.toString()).substring(0, 4))
-            
-            toReturnSolo10.push((totalDeOtros.toString()).substring(0, 4))
-
-            console.log(toReturnSolo10);
-            console.log(otraCategoria);
-            otraCategoria = JSON.stringify(otraCategoria);
-            console.log('LISTO')
-            resAFE.status(200).json([toReturnSolo10,lista_categorias_ordenadasSolo10]);
+            resAFE.status(200).json(calculateCaTend(rest, len));
 
         }else{
 
@@ -1122,8 +1125,6 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                             }).catch(function(error) {
                                 console.log('Fetch Error:', error);
                             });
-                            resAFE.status(200).json(toReturn);
-
 
                         }).catch(function(error) {
                             console.log('Fetch Error:', error);
@@ -1132,7 +1133,8 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                     })
 
                 })
-    
+                resAFE.status(200).json(calculateCaTend(rest));
+
             })
             .catch(function(error) {
                     console.log('Fetch Error:', error);
