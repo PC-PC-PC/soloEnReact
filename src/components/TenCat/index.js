@@ -6,22 +6,26 @@ import './InterfazTenCat.css';
 var respuesta;
 
 var data = {
-  labels:["Accesorios para Vehículos","Alimentos y Bebidas","Animales y Mascotas","Antigüedades y Colecciones"
-  ,"Arte, Librería y Mercería","Autos, Motos y Otros","Bebés","Belleza y Cuidado Personal",
-  "Cámaras y Accesorios","Celulares y Teléfonos","Computación","Consolas y Videojuegos",
-  "Deportes y Fitness","Electrodomésticos y Aires Ac.","Electrónica, Audio y Video",
-  "Entradas para Eventos","Herramientas y Construcción","Hogar, Muebles y Jardín",
-  "Industrias y Oficinas","Inmuebles","Instrumentos Musicales","Joyas y Relojes",
-  "Juegos y Juguetes","Libros, Revistas y Comics","Música, Películas y Series",
-  "Ropa y Accesorios","Salud y Equipamiento Médico","Servicios","Souvenirs, Cotillón y Fiestas",
-  "Otras categorías"],
+  labels:[],
   datasets:[
       {
           label:[],
           data:[],
-          backgroundColor:["rgb(0, 152, 70)","rgb(230, 0, 38)","rgb(255, 233, 0)"],
+          backgroundColor:["rgb(0, 152, 70)","rgb(230, 0, 38)","rgb(255, 233, 0)","rgb(125, 33, 129)", "rgb(13, 29, 162)", "rgb(162, 65, 13)", "rgb(23, 215, 212)", "rgb(241, 111, 254)", "rgb(255, 129, 35)", "rgb(0,0,0)", "rgb(99, 225, 79)"],
           borderColor:"rgb(255,255,255)"
       }
+  ]
+}
+
+var data2 = {
+  labels:["a", "b"],
+  datasets:[
+    {
+      label:["a"],
+      data:[500,200],
+      backgroundColor:["rgb(0, 152, 70)", "rgb(13, 29, 162)", "rgb(162, 65, 13)", "rgb(23, 215, 212)", "rgb(241, 111, 254)", "rgb(255, 129, 35)", "rgb(0,0,0)", "rgb(99, 225, 79)"],
+      borderColor:"rgb(255,255,255)"
+    }
   ]
 }
 
@@ -46,10 +50,11 @@ function otrafuncion(thisComponent) {
     .then(function (res) { 
       res.json().then(function(resp){
 
-        //console.log(resp.data);
-        respuesta = resp.slice(1,31)
+        //console.log(resp);
+        respuesta = resp; 
         console.log(respuesta)
-        data.datasets[0].data = respuesta
+        data.datasets[0].data = respuesta[0]
+        data.labels = respuesta[1]
         console.log('la de arriba es la respuesta')
         
         //recorrerlalista
@@ -132,6 +137,15 @@ class TenCat extends Component {
 
         <Pie
                data={data}
+               options= {options}
+               height = {20}
+               width = {50}
+               redraw />   
+
+          <p style={{textAlign: 'center'}} class = "titulo" >Ventas x Categoría</p>
+
+        <Pie
+               data2={data}
                options= {options}
                height = {20}
                width = {50}
