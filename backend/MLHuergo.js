@@ -1034,6 +1034,51 @@ routes.route('/CatTend/update').post(function(req, res){
 
 });
 
+function contains (listaTemporal, idSeller ) {
+    if (listaTemporal[j] != idSeller) { /// ACA HAY QUE PONER UN FOR PARA QUE RECORRA LA LISTA Y MIRE SI ESTÁ O NO ANTES
+        listaTemporal.push(idSeller);
+    }
+}
+
+/*function contains(a, obj) {
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}*/
+
+app.get('/VenCat', function general(reqDeFE, resAFE){ //Vendedores x Categoría
+    var cantVendxCat = []; //esta es la fija
+    var preg = new meli.Meli(token.client_id, token.client_secret,token.access_token,token.refresh_token);
+    preg.get('/sites/MLA/categories', function(err, res){
+        console.log(res)
+        res.map(function(categoria, i){
+            var listaTemporal = [];
+            //console.log(i++);
+            preg.get('/sites/MLA/search', {category: [categoria.id]}, function(err, resp){
+
+                resp.results.map(function(producto,j) {
+                    // por cada elemento de la lista de productos de la categoría que yo obtuve recién con lo que pedí.
+                    // hay que mirar el seller. hay que ver si el seller está en una lista.
+                    // si está en la lista, sumo uno al contador del seller de la lista.
+                    // si no está en la lista, lo agrego a la lista con valor inical 1.
+                    //console.log(producto.seller.id)
+                    let idSeller = producto.seller.id; 
+                    if(j == 0){
+                        listaTemporal.push(idSeller);
+                    }else if(j > 0){
+                        contains(listaTemporal, idSeller)
+                    }
+                });
+                console.log(listaTemporal);
+            })
+        })
+    })
+
+})
+
 app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
     
     var catTime = [30];
@@ -1087,10 +1132,10 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                     preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
                         var cont = 0;
                         res.results.map(function(producto, x){
-                        
                             catTime[i]._cant += producto.sold_quantity;
-        
                         })
+
+                        //console.log(res.results.seller.id);
 
                         total += catTime[i]._cant; 
                         
@@ -1109,7 +1154,6 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                             console.log('')
                             console.log('lo de abajo agrega Max a todas las categorías')
                             catTime[i]._name += "Max";
-                            //console.log(catTime[i]._name) 
                             
                             fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
                         
