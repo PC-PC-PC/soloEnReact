@@ -1034,51 +1034,6 @@ routes.route('/CatTend/update').post(function(req, res){
 
 });
 
-function contains (listaTemporal, idSeller ) {
-    if (listaTemporal[j] != idSeller) { /// ACA HAY QUE PONER UN FOR PARA QUE RECORRA LA LISTA Y MIRE SI ESTÁ O NO ANTES
-        listaTemporal.push(idSeller);
-    }
-}
-
-/*function contains(a, obj) {
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] === obj) {
-            return true;
-        }
-    }
-    return false;
-}*/
-
-app.get('/VenCat', function general(reqDeFE, resAFE){ //Vendedores x Categoría
-    var cantVendxCat = []; //esta es la fija
-    var preg = new meli.Meli(token.client_id, token.client_secret,token.access_token,token.refresh_token);
-    preg.get('/sites/MLA/categories', function(err, res){
-        console.log(res)
-        res.map(function(categoria, i){
-            var listaTemporal = [];
-            //console.log(i++);
-            preg.get('/sites/MLA/search', {category: [categoria.id]}, function(err, resp){
-
-                resp.results.map(function(producto,j) {
-                    // por cada elemento de la lista de productos de la categoría que yo obtuve recién con lo que pedí.
-                    // hay que mirar el seller. hay que ver si el seller está en una lista.
-                    // si está en la lista, sumo uno al contador del seller de la lista.
-                    // si no está en la lista, lo agrego a la lista con valor inical 1.
-                    //console.log(producto.seller.id)
-                    let idSeller = producto.seller.id; 
-                    if(j == 0){
-                        listaTemporal.push(idSeller);
-                    }else if(j > 0){
-                        contains(listaTemporal, idSeller)
-                    }
-                });
-                console.log(listaTemporal);
-            })
-        })
-    })
-
-})
-
 app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
     
     var catTime = [30];
@@ -1202,8 +1157,49 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
 ////////////////////////////Tarea de los vendedores X categorias////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+function enviarEnUnRatitoVendedoresPorCat(response, dato) {
+    let cant_por_categoria = []
+    let categorias = Object.keys(dato).map(function (key) { 
+                                        cant_por_categoria.push(dato[key])
+                                        console.log(dato[key])
+                                        return key;
+                                        });
 
+    response.send([categorias,cant_por_categoria])
+}
 
+app.get('/VenCat', function general(reqDeFE, resAFE){ //Vendedores x Categoría
+    var cantVendxCat = []; //esta es la fija
+    var cantidad_categorias = 0
+    var preg = new meli.Meli(token.client_id, token.client_secret,token.access_token,token.refresh_token);
+    var lista_de_categorias_con_cant_vendedores = {};
+    preg.get('/sites/MLA/categories', function(err, res){
+        //console.log(res)
+        res.map(function(categoria, i){
+
+            var listaTemporal = [];
+            lista_de_categorias_con_cant_vendedores[categoria.name] = 0 // Inicializo en 0 el contador de la categoría
+            
+            preg.get('/sites/MLA/search', {category: [categoria.id]}, function(err, resp){
+                resp.results.map(function(producto,j) {
+
+                    let idSeller = producto.seller.id;
+                
+                    if (listaTemporal.includes(idSeller)) {
+                        
+                    } else {
+                        listaTemporal.push(idSeller); // Mete el seller id en la lista temporal, sólo si no está ya creado.
+                        lista_de_categorias_con_cant_vendedores[categoria.name] = lista_de_categorias_con_cant_vendedores[categoria.name] + 1 // Sumo 1 al contador de vendedores de la categoría
+                    }
+                });
+            })
+        })
+    })
+
+    setTimeout(enviarEnUnRatitoVendedoresPorCat,10000,resAFE, lista_de_categorias_con_cant_vendedores)
+    console.log(lista_de_categorias_con_cant_vendedores)
+    
+})
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////Funciones de las vendedores X categorias////////////////////////////////

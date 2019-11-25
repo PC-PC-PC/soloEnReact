@@ -17,18 +17,6 @@ var data = {
   ]
 }
 
-var data2 = {
-  labels:["a", "b"],
-  datasets:[
-    {
-      label:["a"],
-      data:[500,200],
-      backgroundColor:["rgb(0, 152, 70)", "rgb(13, 29, 162)", "rgb(162, 65, 13)", "rgb(23, 215, 212)", "rgb(241, 111, 254)", "rgb(255, 129, 35)", "rgb(0,0,0)", "rgb(99, 225, 79)"],
-      borderColor:"rgb(255,255,255)"
-    }
-  ]
-}
-
 var options = {
 maintainAspectRtio: false,
   scales: {
@@ -56,15 +44,7 @@ function otrafuncion(thisComponent) {
         data.datasets[0].data = respuesta[0]
         data.labels = respuesta[1]
         console.log('la de arriba es la respuesta')
-        
-        //recorrerlalista
-        //elegir los 10 mas grandes
-        //sumar las cantidades de los demás (los mas chicos)
-        //eliminar a los demas de las dos Listas (la de labels y la de cantidad)
-        //crear un label "otro"
-        //poner en la posición del label "otro" la suma calculada antes
 
-        //console.log(data.datasets[0].data)
         thisComponent.setState({cambio: true})
         thisComponent.setState({cambio: false})
       })
@@ -137,15 +117,6 @@ class TenCat extends Component {
 
         <Pie
                data={data}
-               options= {options}
-               height = {20}
-               width = {50}
-               redraw />   
-
-          <p style={{textAlign: 'center'}} class = "titulo" >Ventas x Categoría</p>
-
-        <Pie
-               data2={data}
                options= {options}
                height = {20}
                width = {50}
