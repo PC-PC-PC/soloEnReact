@@ -13,7 +13,12 @@ var data = {
       data:[],
       backgroundColor:["rgb(0, 152, 70)","rgb(230, 0, 38)","rgb(255, 233, 0)",
       "rgb(125, 33, 129)", "rgb(13, 29, 162)", "rgb(162, 65, 13)", "rgb(23, 215, 212)", 
-      "rgb(241, 111, 254)", "rgb(255, 129, 35)", "rgb(0,0,0)", "rgb(99, 225, 79)"], // agregar colores
+      "rgb(241, 111, 254)", "rgb(255, 129, 35)", "rgb(0,0,0)", "rgb(99, 225, 79)",
+      "rgb(160, 160, 160)", "rgb(87, 158, 123)", "rgb(138, 39, 39)", "rgb(123, 138, 39)",
+      "rgb(187, 160, 108)", "rgb(204, 215, 39)", "rgb(163, 229, 162)", "rgb(162, 223, 229)",
+      "rgb(149, 181, 228)", "rgb(228, 149, 208)", "rgb(64, 53, 33)", "rgb(66, 128, 1)",
+      "rgb(111, 16, 48)", "rgb(255, 55, 210)", "rgb(61, 255, 55)", "rgb(66, 200, 133)",
+      "rgb(255, 236, 236)", "rgb(211, 215, 255)", "rgb(131, 134, 156)"], // agregar colores
       borderColor:"rgb(255,255,255)"
     }
   ]
@@ -43,8 +48,8 @@ var options = {
         //console.log(resp);
         respuesta = resp; 
         console.log(respuesta)
-        data.datasets[0].data = respuesta[0]
-        data.labels = respuesta[1]
+        data.datasets[0].data = respuesta[1]
+        data.labels = respuesta[0]
         console.log('la de arriba es la respuesta')
         
 
@@ -82,7 +87,7 @@ class VenCat extends Component {
       <div className="VenCat">
 
         <h1 style={{textAlign: 'center'}} class = "titulo" >Vendedores x Categoría</h1>
-        <p style={{color:"#7c7d7e",backgroundColor:"#ebebeb"}}>&nbsp;Proporcion de vendedores con respecto a las categorias.&nbsp;</p>
+        <p style={{color:"#7c7d7e",backgroundColor:"#ebebeb"}}>&nbsp;Cantidad de vendedores por categoria.&nbsp;</p>
 
         <Pie
             data={data}

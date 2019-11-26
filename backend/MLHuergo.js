@@ -203,9 +203,9 @@ function calculateCaTend(objs, leng){
         otraCategoria.push(otraCategoria);
     })
     
-    console.log("Total proporciones: " + propTotal)
-    console.log("Total de unidades vendidas en porcentaje: " + propTotal);
-    console.log("Ya tenemos datos actualizados")
+    //console.log("Total proporciones: " + propTotal)
+    //console.log("Total de unidades vendidas en porcentaje: " + propTotal);
+    //console.log("Ya tenemos datos actualizados")
         
     toReturn = toReturn.slice(leng - 30, leng) //ignoro el primero y agarro los proxs. 30
     lista_categorias_ordenadas_sin_duplicados = objs.slice(1,31)
@@ -239,16 +239,24 @@ function calculateCaTend(objs, leng){
          totalDeOtros = totalDeOtros +parseFloat(valor);
     })
     //totalDeOtros = (totalDeOtros.toString()).substring(0, 4);
-    console.log((totalDeOtros.toString()).substring(0, 4))
+    //console.log((totalDeOtros.toString()).substring(0, 4))
     
     toReturnSolo10.push((totalDeOtros.toString()).substring(0, 4))
 
-    console.log(toReturnSolo10);
-    console.log(otraCategoria);
+    //DATOS ÚLTIMO DÍA
+        console.log(toReturnSolo10);
+        console.log(otraCategoria);
+
+    //DATOS ÚLTIMA SEMANA
+
+    //DATOS ÚLTIMO MES
+
+    //DATOS ÚLTIMO AÑO
+
     otraCategoria = JSON.stringify(otraCategoria);
     console.log('LISTO')
     return [toReturnSolo10,lista_categorias_ordenadasSolo10];
-
+    
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Funciones de los productos/////////////////////////////////////////
@@ -981,7 +989,8 @@ routes.route('/CatTend/checkedToday').get(function(req, res) {
 });
 
 routes.route('/CatTend/searchName/:name').get(function(req, res) {
-
+    //si agrego (ejemplo) /:name == /Otras Categorias
+    //devuelve todos los items de esa categoría
     let name = req.params.name;
     CatTend.find().byName(name).exec(function(err, item) {
 
@@ -1142,8 +1151,6 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
         }
         console.log('')
         console.log('salí del fetch')
-
-        //Conseguir la cantidad de ventas de hoy (this is a work, not a fact)
         
     
     })
