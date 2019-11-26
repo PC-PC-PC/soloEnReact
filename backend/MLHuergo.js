@@ -200,12 +200,8 @@ function calculateCaTend(objs, leng){
 
         acortar = (JSON.stringify(proporcion)).substring(0, 4);
         toReturn.push(acortar);
-        otraCategoria.push(otraCategoria);
+        otraCategoria.push(otraCategoria); //Envio al frontend los DATOS de las categorías menos vendidas (20)
     })
-    
-    //console.log("Total proporciones: " + propTotal)
-    //console.log("Total de unidades vendidas en porcentaje: " + propTotal);
-    //console.log("Ya tenemos datos actualizados")
         
     toReturn = toReturn.slice(leng - 30, leng) //ignoro el primero y agarro los proxs. 30
     lista_categorias_ordenadas_sin_duplicados = objs.slice(1,31)
@@ -213,45 +209,35 @@ function calculateCaTend(objs, leng){
         return b - a;
     });
 
-    lista_categorias_ordenadas_como_objetos = lista_categorias_ordenadas_sin_duplicados.sort(function ordenar_nombres_por_cantidad(a, b) { // non-anonymous as you ordered...
-        return b._cant > a._cant ?  1 // if b should come earlier, push a to end
-        : b._cant < a._cant ? -1 // if b should come later, push a to begin
+    lista_categorias_ordenadas_como_objetos = lista_categorias_ordenadas_sin_duplicados.sort(function ordenar_nombres_por_cantidad(a, b){ 
+        return b._cant > a._cant ?  1 
+        : b._cant < a._cant ? -1 
         : 0;
-        }
-    )
+    })
     
     lista_categorias_ordenadas = [];
 
     lista_categorias_ordenadas_como_objetos.map(function(cat, i){
-        lista_categorias_ordenadas.push(cat._name)
+        lista_categorias_ordenadas.push(cat._name) //Envio al frontend los NOMBRES de las 10 categorías más vendidas
     })            
 
     var lista_categorias_ordenadasSolo10 = lista_categorias_ordenadas.slice(0,10)
-    lista_categorias_ordenadasSolo10.push('Otros')
+    lista_categorias_ordenadasSolo10.push('Otros') //Envio al frontend el NOMBRE de la sección que almacena el resto de las categorías
 
-
-    var toReturnSolo10 = toReturn.slice(0,10)
-    otraCategoria = toReturnOrdenado.slice(10, 30)
+    var toReturnSolo10 = toReturn.slice(0,10) //Recolecto los DATOS de las 10 categorías más vendidas
+    otraCategoria = toReturnOrdenado.slice(10, 30) //Recolecto los DATOS restantes ordenados
     var totalDeOtros = 0
 
     otraCategoria.map(function (valor, i){
          console.log(valor)
-         totalDeOtros = totalDeOtros +parseFloat(valor);
+         totalDeOtros = totalDeOtros + parseFloat(valor);
     })
-    //totalDeOtros = (totalDeOtros.toString()).substring(0, 4);
-    //console.log((totalDeOtros.toString()).substring(0, 4))
     
-    toReturnSolo10.push((totalDeOtros.toString()).substring(0, 4))
-
-    //DATOS ÚLTIMO DÍA
-        console.log(toReturnSolo10);
-        console.log(otraCategoria);
-
-    //DATOS ÚLTIMA SEMANA
-
-    //DATOS ÚLTIMO MES
-
-    //DATOS ÚLTIMO AÑO
+    toReturnSolo10.push((totalDeOtros.toString()).substring(0, 4)) //Envio al frontend los DATOS de las 10 categorías más vendidas
+    //toReturnSolo10.push(10);
+    
+    console.log(toReturnSolo10);
+    console.log(otraCategoria);
 
     otraCategoria = JSON.stringify(otraCategoria);
     console.log('LISTO')
@@ -989,7 +975,7 @@ routes.route('/CatTend/checkedToday').get(function(req, res) {
 });
 
 routes.route('/CatTend/searchName/:name').get(function(req, res) {
-    //si agrego (ejemplo) /:name == /Otras Categorias
+    //si agrego (ejemplo) /:name == /Otras Categorias // NO FUNCIONA
     //devuelve todos los items de esa categoría
     let name = req.params.name;
     CatTend.find().byName(name).exec(function(err, item) {
@@ -1167,10 +1153,10 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
 function enviarEnUnRatitoVendedoresPorCat(response, dato) {
     let cant_por_categoria = []
     let categorias = Object.keys(dato).map(function (key) { 
-                                        cant_por_categoria.push(dato[key])
-                                        console.log(dato[key])
-                                        return key;
-                                        });
+        cant_por_categoria.push(dato[key])
+        console.log(dato[key])
+        return key;
+    });
 
     response.send([categorias,cant_por_categoria])
 }

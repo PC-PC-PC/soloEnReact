@@ -71,18 +71,6 @@ class TenCat extends Component {
     otrafuncion(thisComponent)
 
   }
-  ultimo_dia(){
-
-  } 
-  ultima_semana(){
-
-  }
-  ultimo_mes(){
-
-  }
-  ultimo_año(){
-
-  }
   
   render() {
 
@@ -93,35 +81,15 @@ class TenCat extends Component {
         <h1 style={{textAlign: 'center'}} class = "titulo" >Tendencias x Categoría</h1>
 
         <p style={{color:"#7c7d7e",backgroundColor:"#ebebeb"}}>&nbsp;Ventas realizadas en el tiempo.&nbsp;</p>
-        <form onSubmit={this.handleSubmit}>
-
-          <div algo = "alinear">
-            <div class = "inner">
-              <button onClick = {this.ultimo_dia.bind(this)} type = "button" class = "btn btn-primary" > Ultimo dia </button>
-            </div>
-  
-            <div class = "inner">
-              <button onClick = {this.ultima_semana.bind(this)} type = "button" class = "btn btn-dark" > Ultima semana </button>
-            </div>
-
-            <div class = "inner">
-              <button onClick = {this.ultimo_mes.bind(this)} type = "button" class = "btn btn-success" > Ultimo mes </button>
-            </div>
-
-            <div class = "inner">
-              <button onClick = {this.ultimo_año.bind(this)} type = "button" class = "btn btn-danger" > Ultimo año </button>
-            </div>
-        
-          </div>
-
-          </form>
 
         <Pie
-               data={data}
-               options= {options}
-               height = {20}
-               width = {50}
-               redraw />   
+          data={data}
+          options= {options}
+          height = {20}
+          width = {50}
+          redraw    
+        />
+        
       </div>
       
     );
