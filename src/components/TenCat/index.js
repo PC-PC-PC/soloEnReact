@@ -2,6 +2,9 @@
 import React, { Component } from 'react';
 import {Pie} from 'react-chartjs-2';
 import './InterfazTenCat.css';
+import Cookies  from 'universal-cookie';
+
+var cookie = new Cookies;
 
 var respuesta;
 
@@ -34,7 +37,15 @@ function otrafuncion(thisComponent) {
       console.log(res)}
     )
 
-  fetch('http://localhost:4000/TenCat')
+  fetch('http://localhost:4000/TenCat', {
+    method: 'POST',
+    body: JSON.stringify({
+      "token": JSON.stringify(cookie.get("cookieQueGuardaElToken"))
+    }),
+    headers:{
+        'Content-Type': 'application/json',
+    }
+  })
     .then(function (res) { 
       res.json().then(function(resp){
 

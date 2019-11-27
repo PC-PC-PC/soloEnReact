@@ -19,7 +19,6 @@ let FollSell = require('./modelos/following.model'); //Vendedores seguidos
 let CatSell = require('./modelos/categorySellers.model'); //Cantidad de vendedores por categoria
 let CatTend = require('./modelos/categoryTendency.model'); //Tendencias en el tiempo para categorias
 let CatTime = require('./modelos/competencyCatTime.model'); //Tendencias en el tiempo para categorias de otro vendedor
-var preg;
 
 //Conecto las bases
 app.use(cors()); 
@@ -82,7 +81,6 @@ app.post('/token',function(req,rest){
     request.post({url: url, json:true, options},function(req,res,body){
 
         token = body
-        preg = new meli.Meli(token.client_id, token.client_secret, token.access_token, token.refresh_token);
         rest.send(token)
         
     })
@@ -1051,10 +1049,14 @@ routes.route('/CatTend/update').post(function(req, res){
 
 });
 
-app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
+app.post('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categoría
+
+    var token = reqDeFE.body.token;
+    token = JSON.parse(token);
     
     var catTime = [30];
     let today = new Date();
+    var preg = new meli.Meli(token.client_id, token.client_secret, token.access_token, token.refresh_token);
     let date = today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
     fetch('http://localhost:4000/MLHuergo/CatTend', {
 
@@ -1069,17 +1071,94 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
     })
     .then(function(resp) {resp.json().then(function(rest){
 
-        console.log('hice json de la respuesta')
-        var len = rest.length - 1
-        if(date == rest[rest.length - 1]._day) {
+        console.log(rest);
+        var len = rest.length - 1;
+        var catTimeMax;
+        preg.get('/sites/MLA/categories', function(err, res){
             
-            var aux = catTime.slice(1, 30); 
+            console.log('parece que hizo la pregunta de categories')
+            var total = 0;
+            res.map(function(item, i){
+                
+                catTime[i] = {
+    
+                    _name: item.name,
+                    _day: date,
+                    _cant: 0
+                    
+                }
+                // de aca en adelante, una vez por día en algun otro lado
+                preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
+
+                    var cont = 0;
+                    res.results.map(function(producto, x){
+                        catTime[i]._cant += producto.sold_quantity;
+                    })
+
+                    //console.log(res.results.seller.id);
+                    total += catTime[i]._cant; 
+                    catTimeMax = catTime[i];
+                    //total = cantidad de unidades vendidas TOTALES (todas las categorías)
+
+                    console.log('')
+                    console.log('lo de abajo agrega Max a todas las categorías')
+                    catTimeMax._name += "Max";
+                    catTime[i]._cant = catTimeMax._cant - rest[i]._cant;
+                    console.log(catTime[i]._cant)
+                    fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
+
+                        method: 'POST',
+                        body: JSON.stringify(catTime[i]),
+                        headers:{
+                            'Content-Type': 'application/json',
+                        }
+    
+                    })
+                    .then(function(res){ 
+
+                        fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
+
+                            method: 'POST',
+                            body: JSON.stringify(catTimeMax),
+                            headers:{
+                                'Content-Type': 'application/json',
+                            }
+        
+                        })
+                        .then(function(res){ 
+        
+                            resAFE.status(200).json(calculateCaTend(rest));
+
+                        }).catch(function(error) {
+                            console.log('Fetch Error:', error);
+                        });
+
+                    }).catch(function(error) {
+                        console.log('Fetch Error:', error);
+                    });
+                        
+                }).catch(function(error) {
+                    console.log('Fetch Error:', error);
+                });
+                    
+            })
+
+        })
+
+    }).catch(function(error) {
+        console.log('Fetch Error:', error);
+    });
+        /*if(date == rest[rest.length - 1]._day) {
+            
+            /*var aux = catTime.slice(1, 30); 
             //catTime = catTime.slice(1, 30); 
             console.log(aux)
             rest.map(function(resta, i){
                 console.log(aux[i])
                 //console.log(catTime)                        
-            })    
+            })*/
+            
+            console.log(catTime._cant)
 
             //console.log('')
             //console.log(rest + ' respuesta de rest limpia')
@@ -1087,7 +1166,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
             //console.log(rest[len]._day + ' respuesta de rest modificado')
             //console.log('')
             //console.log(date)
-            resAFE.status(200).json(calculateCaTend(rest, len));
+            /*resAFE.status(200).json(calculateCaTend(rest, len));
             
         }else{
             
@@ -1104,7 +1183,6 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         
                     }
                     // de aca en adelante, una vez por día en algun otro lado
-    
                     preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
                         var cont = 0;
                         res.results.map(function(producto, x){
@@ -1115,26 +1193,10 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         total += catTime[i]._cant; 
                         //total = cantidad de unidades vendidas TOTALES (todas las categorías)
     
-                        /*fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
-                        
-                            method: 'POST',
-                            body: JSON.stringify(catTime[i]),
-                            headers:{
-                                'Content-Type': 'application/json',
-                            }
-        
-                        })*/
-                        //.then(function(res){ 
                             console.log('')
                             console.log('lo de abajo agrega Max a todas las categorías')
                             catTime[i]._name += "Max";
-                            
-/*                          var aux = catTime.slice(31, 60); //normales
-                            catTime = catTime.slice(1, 30); //MAX
-
-                            console.log(aux)
-                            console.log(catTime) */
-
+                                
                             fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
 
                                 method: 'POST',
@@ -1149,12 +1211,12 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                             }).catch(function(error) {
                                 console.log('Fetch Error:', error);
                             });
-
+                            
                         /*}).catch(function(error) {
                             console.log('Fetch Error:', error);
                         });*/
                         
-                    })
+                    /*})
 
                 })
                 resAFE.status(200).json(calculateCaTend(rest));
@@ -1164,7 +1226,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                     console.log('Fetch Error:', error);
             });
             
-        }
+        }*/
         console.log('')
         console.log('salí del fetch')
     
@@ -1174,7 +1236,6 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
 
 //})
 
-})
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////Tarea de los vendedores X categorias////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////

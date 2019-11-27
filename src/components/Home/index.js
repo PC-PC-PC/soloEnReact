@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import {parse} from "query-string";
+import Badge from 'react-bootstrap/Badge';
+import Cookies  from 'universal-cookie';
+
+var logueado = false
 
 var ciudad
 var status
@@ -16,12 +20,13 @@ var tipoDeUsuario
 var puntos
 var idDelSitio
 
+var cookie = new Cookies;
 var options = {
   form: {
     "grant_type":"authorization_code",
     "client_id": '6722315906287226',
     "client_secret": 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI',
-    "redirect_uri": "http://localhost:3000/",
+    "redirect_uri": "https://localhost:3000",
     "code": ""
   },
   method: "POST", 
@@ -33,6 +38,7 @@ var options = {
 var el_auth_code_anterior
 
 function miFuncion(textitoQueDevolvioToken) {
+
   if (this.state.termino) {
     if (this.state.termino == 'si') {
       return null
@@ -41,6 +47,9 @@ function miFuncion(textitoQueDevolvioToken) {
 
   fetch('/pantallaInicio', {
     method: 'POST',
+    body: JSON.stringify({
+      "token": JSON.stringify(cookie.get("cookieQueGuardaElToken"))
+    }),
     headers:{
         'Content-Type': 'application/json',
     }
@@ -54,19 +63,16 @@ function miFuncion(textitoQueDevolvioToken) {
         var valoracionesObtenidas = value
 
         if (textitoQueDevolvioToken==='1') {
-          localStorage.setItem('valoracionesObtenidas', JSON.stringify(value));
-  
 
-          console.log(this.ciudad)
-          
+          localStorage.setItem('valoracionesObtenidas', JSON.stringify(value));
           this.setState({ termino: 'si', valoraciones: [], text: '', userok: 'true'});
-          console.log('primerif')
           console.log(textitoQueDevolvioToken)
+
         } else {
+
           this.setState({ termino: 'no', valoraciones: [], text: '', userok: 'true'});
-          console.log('segundoif')
           console.log(textitoQueDevolvioToken)
-        //console.log('estado'+JSON.stringify(valoracionesObtenidas))
+
         }
 
         }
@@ -74,96 +80,125 @@ function miFuncion(textitoQueDevolvioToken) {
       )
 
     } else {
+
       this.setState({ termino: 'no', valoraciones: [], text: '', userok: 'false'});
-      console.log('elseif')
       console.log(textitoQueDevolvioToken)
+
     }
+
   })
-  /*.catch(function(error) {
-    unavariablequemeindicaquetodoanduvomal=<p>No Existe tal usuario</p>
-    this.setState({userok: 'false', termino:'si'});
-  });*/
+
 };
 
-
-
 var url = 'https://api.mercadolibre.com/oauth/token?';
-//var unavariablequemeindicaquetodoanduvomal = "";
 
 class Home extends Component {
+
   constructor(props) {
+
       super(props)
       this.state = { termino: 'no', valoraciones: [], text: '', userok: 'false'};
       miFuncion = miFuncion.bind(this);
+
     }
 
   componentWillMount(){
 
     const URLSearchParams = window.URLSearchParams;
-
     var burl = new URLSearchParams();
-    console.log(burl)
+
     if (!parse(this.props.location.search).code || el_auth_code_anterior !== undefined) {
-      console.log('pinché')
+
       return
+
     } else {
-      console.log('el auth code anterior es')
-      console.log(el_auth_code_anterior)
+
       el_auth_code_anterior = parse(this.props.location.search).code
+
     }
 
     burl.append("grant_type","authorization_code")
     burl.append("client_id", '6722315906287226')
-    burl.append("client_secret", 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI',)
+    burl.append("client_secret", 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI')
     burl.append("code",parse(this.props.location.search).code);
     burl.append("redirect_uri",options.form.redirect_uri)
 
-    var aurl = url + burl
-
-    console.log(aurl)
+    var aurl = url + burl 
     
-    
-    console.log('cijasd')
-    console.log(this.state.termino)
-    
-    console.log('sadfasfd')
-    console.log(this.state.userok)
     if (this.state.termino==='no' && this.state.userok==='false'){
-      fetch('/token', {
+
+      fetch('/austoken', {
+
+
         method: 'POST',
+        body: cookie,
         body: JSON.stringify({
           "url": aurl
         }),
         headers:{
           'Content-Type': 'application/json',
         }
+
       })
+
       .then(function(response){
-        console.log(response.data)
-        miFuncion('1')
+
+        return response.text()
+          .then(function (data) {
+            console.log(data);
+            cookie.set("cookieQueGuardaElToken", data)
+            miFuncion('1')
+          })
+
       });
     
     } else if(el_auth_code_anterior === parse(this.props.location.search).code || (this.state.termino==='si' && this.state.userok==='true')) {
+      
       miFuncion('1')
+
     }
 
+  }
+
+  handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout(e){
+
+    cookie.remove("cookieQueGuardaElToken")
+    localStorage.setItem('valoracionesObtenidas', null) 
 
   }
-  
-  
- 
 
   render() {
-    //if (this.state.valoraciones.length > 0) {
-      if (this.state.termino==='si' && this.state.userok==='false') {
-        console.log('va a recargar la pagina llamando de nuevo a mi funcion oh no')
-        miFuncion('0');
-      }
 
-      var algo = JSON.parse(localStorage.getItem('valoracionesObtenidas'))
 
-      if (algo !== null){
-        console.log(algo.address.city)
+    if (this.state.termino==='si' && this.state.userok==='false') {
+
+      miFuncion('0');
+      
+    }
+
+    var algo = JSON.parse(localStorage.getItem('valoracionesObtenidas'))
+
+    if (algo !== null){
+
+      if (JSON.stringify(cookie.get("cookieQueGuardaElToken")) == ""){
+
+        ciudad = ""
+        status = ""
+        level_id = ""
+        seller_status = ""
+        transacciones_canceladas = ""
+        transacciones_completadas = ""
+        transacciones_periodo = ""
+        transacciones_total = ""
+        nombreDelUsuario = ""
+        fechaDeRegistro = ""
+        pais = ""
+        tipoDeUsuario = ""
+        puntos = ""
+        idDelSitio = ""
+      
+      }else{
+
         ciudad = algo.address.city
         status = algo.status.site_status
         level_id = algo.seller_reputation.level_id
@@ -178,24 +213,65 @@ class Home extends Component {
         tipoDeUsuario = algo.user_type
         puntos = algo.points
         idDelSitio = algo.site_id
+
       }
 
+      var signout = <a href="/" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
+      //var signout = <a href="https://www.mercadolibre.com/jms/mla/lgz/logout?go=https://auth.mercadolibre.com.ar/authorization?redirect_uri=mysite&response_type=code&client_id=CLIENT_ID&platform_id=ml" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
+      //Esto de arriba redirecciona y desloguea a Mercado libre.
 
+      fechaDeRegistro = (JSON.stringify(fechaDeRegistro)).substring(1, 11)
+
+      if (pais === 'AR'){
+        pais = 'Argentina'
+      }
+
+      if (level_id === '5_green'){
+        level_id = <Badge variant="verdecito"> </Badge>//COMPUMAR
+      }else if (level_id === '4_light_green' ){
+        level_id = <Badge variant="verdecito_clarito"> </Badge> //ARIEL_SANDIN2008
+      }else if (level_id === '2_orange'){
+        level_id = <Badge variant="naranjita"> </Badge> //CAMILAASBORNORUS
+      }else if (level_id === '3_yellow'){
+        level_id = <Badge variant="amarillito"> </Badge> //CONO1971
+      }else if (level_id === '1_red'){
+        level_id = <Badge variant="rojito"> </Badge> //VEJU2313599
+      }else if (level_id === 'null'){
+        level_id = '-'
+      }
+
+      if (seller_status === 'null'){
+        seller_status = '-'
+      }
+
+      if (status === 'active'){
+        status = 'Activo'
+      }else{
+        status = 'Inactivo'
+      }
+
+      if (transacciones_periodo === 'historic'){
+        transacciones_periodo = 'Histórico'
+      }else{
+        transacciones_periodo = 'Nuevo'
+      }
+
+    }else{
+
+      signout = <a href="https://auth.mercadolibre.com/authorization?client_id=5512240852624948&response_type=code&state=5ca75bd30" className="btn btn-warning" role="button" aria-pressed="true">Sign In</a>
+
+    }
+
+    return (
       
-      /*if (unavariablequemeindicaquetodoanduvomal = 1) {
-        var elMensajeDeError = <p>Se rompió todo</p>;
-      } else {
-        var elMensajeDeError = <p>funca</p>
-      }*/
-
-      return (
+      <div>
         
-        <div>
-          
-          <table class="tabla">
+        <table className="tabla">
+          <tbody>
+              
             <tr>
               <th>Datos de la Empresa</th>
-              <th><a href="https://auth.mercadolibre.com/authorization?client_id=6722315906287226&response_type=code&state=5ca75bd30" class="btn btn-warning" role="button" aria-pressed="true">Sign In</a></th>
+              <th>{signout}</th>
             </tr>
             <tr>
               <td>Nombre de la empresa</td>
@@ -229,30 +305,44 @@ class Home extends Component {
               <td>Estado del sitio</td>
               <td>{status}</td>
             </tr>
+
+            </tbody>
+
           </table>
 
-          <table class="tabla">
-            <tr>
-              <th>Reputación del usuario</th>
-              <th></th>
-            </tr>
-            <tr>
-              <td>Nivel</td>
-              <td>{level_id}</td>
-            </tr>
-            <tr>
-              <td>Estado del vendedor</td>
-              <td>{seller_status}</td>
-            </tr>
-          </table>
+          <table className="tabla">
 
-          <table class="tabla">
+            <tbody>
+                
+              <tr>
+                <th>Reputación del usuario</th>
+                <th></th>
+              </tr>
+              <tr>
+                <td>Nivel</td>
+                <td>{level_id}</td>
+              </tr>
+              <tr>
+                <td>Estado del vendedor</td>
+                <td>{seller_status}</td>
+              </tr>
+
+          </tbody>
+
+        </table>
+
+        <table className="tabla">
+
+          <tbody>
+              
             <tr>
               <th>Ventas</th>
               <th></th>
             </tr>
+            <tr>
               <td>Canceladas</td>
               <td>{transacciones_canceladas}</td>
+            </tr>
             <tr>
               <td>Completadas</td>
               <td>{transacciones_completadas}</td>
@@ -265,9 +355,12 @@ class Home extends Component {
               <td>Total</td>
               <td>{transacciones_total}</td>
             </tr>
-          </table>
-          
-      </div>
+
+          </tbody>
+
+        </table>
+        
+    </div>
     );    
   }
 }
