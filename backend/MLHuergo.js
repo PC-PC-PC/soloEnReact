@@ -1072,6 +1072,14 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
         console.log('hice json de la respuesta')
         var len = rest.length - 1
         if(date == rest[rest.length - 1]._day) {
+            
+            var aux = catTime.slice(1, 30); 
+            //catTime = catTime.slice(1, 30); 
+            console.log(aux)
+            rest.map(function(resta, i){
+                console.log(aux[i])
+                //console.log(catTime)                        
+            })    
 
             //console.log('')
             //console.log(rest + ' respuesta de rest limpia')
@@ -1080,7 +1088,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
             //console.log('')
             //console.log(date)
             resAFE.status(200).json(calculateCaTend(rest, len));
-        
+            
         }else{
             
             preg.get('/sites/MLA/categories', function(err, res){
@@ -1107,7 +1115,7 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                         total += catTime[i]._cant; 
                         //total = cantidad de unidades vendidas TOTALES (todas las categorías)
     
-                        fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
+                        /*fetch('http://localhost:4000/MLHuergo/CatTend/add', { 
                         
                             method: 'POST',
                             body: JSON.stringify(catTime[i]),
@@ -1115,13 +1123,20 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                                 'Content-Type': 'application/json',
                             }
         
-                        })
-                        .then(function(res){ 
+                        })*/
+                        //.then(function(res){ 
                             console.log('')
                             console.log('lo de abajo agrega Max a todas las categorías')
                             catTime[i]._name += "Max";
+                            
+/*                          var aux = catTime.slice(31, 60); //normales
+                            catTime = catTime.slice(1, 30); //MAX
+
+                            console.log(aux)
+                            console.log(catTime) */
+
                             fetch('http://localhost:4000/MLHuergo/CatTend/update', { 
-                        
+
                                 method: 'POST',
                                 body: JSON.stringify(catTime[i]),
                                 headers:{
@@ -1135,9 +1150,9 @@ app.get('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categorí
                                 console.log('Fetch Error:', error);
                             });
 
-                        }).catch(function(error) {
+                        /*}).catch(function(error) {
                             console.log('Fetch Error:', error);
-                        });
+                        });*/
                         
                     })
 
