@@ -26,7 +26,7 @@ var options = {
     "grant_type":"authorization_code",
     "client_id": '6722315906287226',
     "client_secret": 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI',
-    "redirect_uri": "https://localhost:3000",
+    "redirect_uri": "http://localhost:3000/",
     "code": ""
   },
   method: "POST", 
@@ -119,7 +119,7 @@ class Home extends Component {
 
     burl.append("grant_type","authorization_code")
     burl.append("client_id", '6722315906287226')
-    burl.append("client_secret", 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI')
+    burl.append("client_secret", 'su5nxkJECtvTyYp5GGVlGcy8QicnzeAI',)
     burl.append("code",parse(this.props.location.search).code);
     burl.append("redirect_uri",options.form.redirect_uri)
 
@@ -127,8 +127,7 @@ class Home extends Component {
     
     if (this.state.termino==='no' && this.state.userok==='false'){
 
-      fetch('/austoken', {
-
+      fetch('/token', {
 
         method: 'POST',
         body: cookie,
@@ -168,7 +167,6 @@ class Home extends Component {
   }
 
   render() {
-
 
     if (this.state.termino==='si' && this.state.userok==='false') {
 
@@ -216,10 +214,9 @@ class Home extends Component {
 
       }
 
-      var signout = <a href="/" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
-      //var signout = <a href="https://www.mercadolibre.com/jms/mla/lgz/logout?go=https://auth.mercadolibre.com.ar/authorization?redirect_uri=mysite&response_type=code&client_id=CLIENT_ID&platform_id=ml" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
+      //var signout = <a href="/" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
+      var signout = <a href="https://www.mercadolibre.com/jms/mla/lgz/logout?go=https://auth.mercadolibre.com.ar/authorization?redirect_uri=mysite&response_type=code&client_id=CLIENT_ID&platform_id=ml" className="btn btn-warning" role="button" aria-pressed="true" onClick={this.handleClickDelBotonQuePodriaSerElDeLoginOElDeLogout.bind(this)}>Sign Out</a>
       //Esto de arriba redirecciona y desloguea a Mercado libre.
-
       fechaDeRegistro = (JSON.stringify(fechaDeRegistro)).substring(1, 11)
 
       if (pais === 'AR'){
@@ -258,7 +255,7 @@ class Home extends Component {
 
     }else{
 
-      signout = <a href="https://auth.mercadolibre.com/authorization?client_id=5512240852624948&response_type=code&state=5ca75bd30" className="btn btn-warning" role="button" aria-pressed="true">Sign In</a>
+      signout = <a href="https://auth.mercadolibre.com/authorization?client_id=6722315906287226&response_type=code&state=5ca75bd30" className="btn btn-warning" role="button" aria-pressed="true">Sign In</a>
 
     }
 

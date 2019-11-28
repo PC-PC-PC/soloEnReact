@@ -1056,7 +1056,7 @@ app.post('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categor√
     
     var catTime = [30];
     let today = new Date();
-    var preg = new meli.Meli(token.client_id, token.client_secret, token.access_token, token.refresh_token);
+    
     let date = today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
     fetch('http://localhost:4000/MLHuergo/CatTend', {
 
@@ -1074,6 +1074,8 @@ app.post('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categor√
         console.log(rest);
         var len = rest.length - 1;
         var catTimeMax;
+        var preg = new meli.Meli(token.client_id, token.client_secret, token.access_token, token.refresh_token);
+        //console.log(preg)
         preg.get('/sites/MLA/categories', function(err, res){
             
             console.log('parece que hizo la pregunta de categories')
@@ -1088,7 +1090,11 @@ app.post('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categor√
                     
                 }
                 // de aca en adelante, una vez por d√≠a en algun otro lado
-                preg.get('/sites/MLA/search', {category: [item.id]}, function(err, res){
+                //console.log(preg)
+                preg.post('/sites/MLA/search', {category: [item.id]}, function(err, res){
+
+                    var token = reqDeFE.body.token;
+    token = JSON.parse(token);
 
                     var cont = 0;
                     res.results.map(function(producto, x){
@@ -1137,9 +1143,7 @@ app.post('/TenCat', function general(reqDeFE, resAFE){ //Tendencias por Categor√
                         console.log('Fetch Error:', error);
                     });
                         
-                }).catch(function(error) {
-                    console.log('Fetch Error:', error);
-                });
+                })
                     
             })
 
